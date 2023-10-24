@@ -28,19 +28,6 @@ function callback(response: any) {
   }
 }
 
-function deleteWorkout(id: number) {
-
-  workoutStore.deleteWorkout(id)
-      .then(response => {
-        console.log("workout exclude with success!")
-        router.push("/")
-      })
-      .catch(error => {
-        console.log(error)
-      })
-
-}
-
 function goToEditWorkout() {
   router.push({name: 'EditWorkout', params: {id: workoutId}})
 }

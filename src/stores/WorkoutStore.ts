@@ -4,6 +4,7 @@ import {BASE_URL} from "../constants/Constants";
 import {ref} from "vue";
 import apiClient from "../configuration/Axios";
 import {WorkoutDetails} from "../models/WorkoutDetails";
+import {WorkoutExercises} from "../models/WorkoutExercises";
 
 
 interface WorkoutState {
@@ -54,6 +55,35 @@ export const useWorkoutStore = defineStore('workouts', {
                 })
         },
 
+        async getExercisesByWorkoutId(workoutId: number, callback: Function, fail?: Function) {
+            return await apiClient.get<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`)
+                .then(response => {
+
+                    callback(response);
+
+                })
+                .catch(error => {
+                    if (fail) {
+                        fail(error)
+                    }
+                })
+        },
+
+        async linkExercisesToWorkout(workoutId: number, exerciseIds: number[], callback: Function, fail?: Function) {
+            return await apiClient.put<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`,
+                exerciseIds)
+                .then(response => {
+
+                    callback(response);
+
+                })
+                .catch(error => {
+                    if (fail) {
+                        fail(error)
+                    }
+                })
+        },
+
         async updateWorkout(id: number, workout: Workout): Promise<any> {
             return await apiClient.put<Workout>(`/workouts/${id}`, workout)
         },
@@ -75,13 +105,13 @@ export const useWorkoutStore = defineStore('workouts', {
             });
         },
 
-        filterWrokouts (active: boolean): Workout[] {
+        filterWrokouts(active: boolean): Workout[] {
 
             return this.workouts
                 .filter(workout => workout.active === active)
         },
 
-        
+
     },
     getters: {
         getActiveWorkouts: (state): Workout[] => {

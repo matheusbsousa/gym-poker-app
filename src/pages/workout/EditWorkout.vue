@@ -74,6 +74,13 @@ function onChangeCheckBox() {
       .map((weekDay: any) => weekDay.value)
 }
 
+function deleteWorkout(){
+  workoutStore.deleteWorkout(id)
+      .then(response => {
+        router.push({name: 'Home'})
+      })
+}
+
 
 </script>
 
@@ -81,7 +88,7 @@ function onChangeCheckBox() {
 
   <Title title="Edit Workout">
     <template #button>
-      <DeleteButton></DeleteButton>
+      <DeleteButton @click="deleteWorkout"></DeleteButton>
     </template>
   </Title>
 
