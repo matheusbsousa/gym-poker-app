@@ -1,10 +1,8 @@
 import {defineStore} from 'pinia'
 import {Workout} from "../models/Workout";
 import {BASE_URL} from "../constants/Constants";
-import {ref} from "vue";
 import apiClient from "../configuration/Axios";
 import {WorkoutDetails} from "../models/WorkoutDetails";
-import {WorkoutExercises} from "../models/WorkoutExercises";
 
 
 interface WorkoutState {
@@ -32,9 +30,6 @@ export const useWorkoutStore = defineStore('workouts', {
             this.selectedWorkout = workout;
             console.log(this.selectedWorkout)
         },
-        setStateIsActive(isActive: boolean) {
-            this.isActive = isActive;
-        },
 
         async fetchWorkouts() {
             const result = await apiClient.get('/workouts');
@@ -46,35 +41,6 @@ export const useWorkoutStore = defineStore('workouts', {
                 .then(response => {
 
                     callback(response)
-
-                })
-                .catch(error => {
-                    if (fail) {
-                        fail(error)
-                    }
-                })
-        },
-
-        async getExercisesByWorkoutId(workoutId: number, callback: Function, fail?: Function) {
-            return await apiClient.get<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`)
-                .then(response => {
-
-                    callback(response);
-
-                })
-                .catch(error => {
-                    if (fail) {
-                        fail(error)
-                    }
-                })
-        },
-
-        async linkExercisesToWorkout(workoutId: number, exerciseIds: number[], callback: Function, fail?: Function) {
-            return await apiClient.put<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`,
-                exerciseIds)
-                .then(response => {
-
-                    callback(response);
 
                 })
                 .catch(error => {

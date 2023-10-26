@@ -13,7 +13,7 @@ import EditWorkout from "./EditWorkout.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const route = useRoute();
-const workoutId = Number(route.params.id)
+const workoutId = Number(route.params.workoutId)
 
 const workoutDetails = ref<WorkoutDetails>()
 
@@ -29,7 +29,7 @@ function callback(response: any) {
 }
 
 function goToEditWorkout() {
-  router.push({name: 'EditWorkout', params: {id: workoutId}})
+  router.push({name: 'EditWorkout', params: {workoutId: workoutId}})
 }
 
 </script>

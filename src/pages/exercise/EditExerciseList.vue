@@ -8,23 +8,21 @@ import {useRoute, useRouter} from "vue-router";
 import AddButton from "../../components/AddButton.vue";
 import Title from "../../components/Title.vue";
 import {AxiosResponse} from "axios";
-import {useWorkoutStore} from "../../stores/WorkoutStore";
-import {Workout} from "../../models/Workout";
 import {WorkoutExercises} from "../../models/WorkoutExercises";
+import {useExerciseStore} from "../../stores/ExerciseStore";
 
 const router = useRouter();
-const workoutId = useRoute().params.id;
+const workoutId = useRoute().params.workoutId;
+const exerciseStore = useExerciseStore();
 
-const workoutStore = useWorkoutStore();
-workoutStore.getExercisesByWorkoutId(Number(workoutId), getExercisesByWorkoutIdCallback);
 
 const workoutExercises = ref<WorkoutExercises>();
+exerciseStore.getExercisesByWorkoutId(Number(workoutId))
+    .then(() => {
+      workoutExercises.value = exerciseStore.workoutExercises;
+      workoutExercises.value?.exercises.sort((a, b) => a.name.localeCompare(b.name));
+    });
 
-function getExercisesByWorkoutIdCallback(response: AxiosResponse<WorkoutExercises>) {
-  if (response.status === 200) {
-    workoutExercises.value = response.data;
-  }
-}
 
 function select(exercise: Exercise) {
   exercise.isSelected = !exercise.isSelected
@@ -52,7 +50,7 @@ function linkSelectedExercisesToWorkout() {
       .filter(exercise => exercise.isSelected)
       .map(exercise => exercise.id);
   console.log(workoutId + '-' + exerciseIds)
-  workoutStore.linkExercisesToWorkout(workoutId!!, exerciseIds, afterLinkExercises)
+  exerciseStore.linkExercisesToWorkout(workoutId!!, exerciseIds, afterLinkExercises)
 }
 
 </script>

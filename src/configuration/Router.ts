@@ -5,6 +5,7 @@ import WorkoutDetails from "../pages/workout/WorkoutDetails.vue";
 import EditWorkout from "../pages/workout/EditWorkout.vue";
 import EditExerciseList from "../pages/exercise/EditExerciseList.vue";
 import NewExercise from "../pages/exercise/NewExercise.vue";
+import EditExercise from "../pages/exercise/EditExercise.vue";
 
 export const router = createRouter({
     history: createWebHistory(),
@@ -15,29 +16,34 @@ export const router = createRouter({
             name: 'Home'
         },
         {
-            path: '/workouts/new-workout',
+            path: '/workouts/new',
             component: NewWorkout,
             name: 'NewWorkout'
         },
         {
-            path: '/workouts/:id',
+            path: '/workouts/:workoutId',
             component: WorkoutDetails,
             name: 'WorkoutDetails'
         },
         {
-            path: '/workouts/:id/edit',
+            path: '/workouts/:workoutId/edit',
             component: EditWorkout,
             name: 'EditWorkout'
         },
         {
-            path: '/workouts/:id/edit-exercises',
+            path: '/workouts/:workoutId/exercises/edit-exercise-list',
             component: EditExerciseList,
             name: 'EditExerciseList'
         },
         {
-            path: '/workouts/:id/new-exercise',
+            path: '/workouts/:workoutId/exercises/new',
             component: NewExercise,
             name: 'NewExercise'
+        },
+        {
+            path: '/workouts/:workoutId/exercises/:exerciseId/edit',
+            component: EditExercise,
+            name: 'EditExercise'
         }
 
     ]

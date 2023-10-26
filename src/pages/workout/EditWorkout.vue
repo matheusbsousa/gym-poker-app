@@ -15,11 +15,11 @@ import {WeekDaysEnum} from "../../models/WeekDaysEnum";
 import DeleteButton from "../../components/DeleteButton.vue";
 
 const route = useRoute();
-const id = Number(route.params.id)
-console.log(id)
+const workoutId = Number(route.params.workoutId)
+console.log(workoutId)
 
 const workoutStore = useWorkoutStore();
-workoutStore.getWorkoutById(id, callback)
+workoutStore.getWorkoutById(workoutId, callback)
 
 let formData = ref({
   name: '',
@@ -49,16 +49,16 @@ async function submitForm() {
 
   if (isFormValid) {
 
-    await workoutStore.updateWorkout(id, {
+    await workoutStore.updateWorkout(workoutId, {
       active: formData.value.active,
       days: formData.value.days.join(' - '),
       name: formData.value.name,
       type: formData.value.type,
-      id: id
+      id: workoutId
     })
         .then(response => {
           console.log(response)
-          router.push(`/workouts/${id}`);
+          router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
         })
         .catch(error => {
           console.log(error)
@@ -75,7 +75,7 @@ function onChangeCheckBox() {
 }
 
 function deleteWorkout(){
-  workoutStore.deleteWorkout(id)
+  workoutStore.deleteWorkout(workoutId)
       .then(response => {
         router.push({name: 'Home'})
       })
@@ -126,7 +126,6 @@ function deleteWorkout(){
         <v-radio label="Active" :value="true"></v-radio>
         <v-radio label="Inactive" :value="false"></v-radio>
       </v-radio-group>
-
 
       <p class=" pa-1 text-sm-h6">Type</p>
 

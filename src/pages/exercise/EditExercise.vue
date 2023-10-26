@@ -3,40 +3,33 @@
 import Title from "../../components/Title.vue";
 import BackButton from "../../components/BackButton.vue";
 import SubmitButton from "../../components/SubmitButton.vue";
-import {useWorkoutStore} from "../../stores/WorkoutStore";
-import {reactive} from "vue";
+import {ref} from "vue";
 import {maxLength, maxValue, minLength, minValue, numeric, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import {router} from "../../configuration/Router";
 import {useRoute} from "vue-router";
 import {useExerciseStore} from "../../stores/ExerciseStore";
+import {ExerciseDetail} from "../../models/ExerciseDetail";
 
 const route = useRoute();
 const workoutId = Number(route.params.workoutId)
-
+const exerciseId = Number(route.params.exerciseId)
 const exerciseStore = useExerciseStore();
+exerciseStore.getExercisesById(workoutId, exerciseId)
+    .then(() => {
+      formData.value = exerciseStore.exerciseDetail;
+    })
 
-interface ExerciseInitialState {
-  name: string
-  weight: number | undefined
-  repetitionsMinimum: number | undefined
-  repetitionsMaximum: number | undefined
-  seriesNumber: number | undefined
-  restTimeInMinutes: number | undefined
-  observations: string
-}
 
-const initialState: ExerciseInitialState = {
+const formData = ref<any>({
   name: '',
+  seriesNumber: undefined,
+  restTimeInMinutes: undefined,
   weight: undefined,
   repetitionsMinimum: undefined,
   repetitionsMaximum: undefined,
-  seriesNumber: undefined,
-  restTimeInMinutes: undefined,
   observations: ''
-};
-
-const formData = reactive({...initialState})
+});
 
 const rules = {
   name: {
@@ -83,15 +76,16 @@ async function submitForm() {
 
   if (isFormValid) {
 
-    await exerciseStore.createExercise(workoutId, {
+    await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
 
-      name: formData.name,
-      weight: formData.weight,
-      repetitionsMinimum: formData.repetitionsMinimum,
-      repetitionsMaximum: formData.repetitionsMaximum,
-      seriesNumber: formData.seriesNumber,
-      restTimeInMinutes: formData.restTimeInMinutes,
-      observations: formData.observations,
+      id: formData.value.id,
+      name: formData.value.name,
+      weight: formData.value.weight,
+      repetitionsMinimum: formData.value.repetitionsMinimum,
+      repetitionsMaximum: formData.value.repetitionsMaximum,
+      seriesNumber: formData.value.seriesNumber,
+      restTimeInMinutes: formData.value.restTimeInMinutes,
+      observations: formData.value.observations,
     })
         .then(response => {
           router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})

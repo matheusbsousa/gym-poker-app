@@ -16,7 +16,7 @@ const activeWorkouts = workoutStore.filterWrokouts(true)
 const inactiveWorkouts = workoutStore.filterWrokouts(false)
 
 function addWorkout(){
-  route.push('/workouts/new-workout')
+  route.push('/workouts/new')
 }
 
 </script>
@@ -62,7 +62,7 @@ function addWorkout(){
 
           <v-sheet :elevation="1" :height="80" class="mt-2 mb-2 d-flex align-center rounded">
             <div class="pa-4 size">
-              <v-icon color="red" size="50">{{ workout.type }}</v-icon>
+              <font-awesome-icon class="text-red text-h5" :icon="workout.type" />
             </div>
             <div class="flex-1-0">
               <p class="size text-h6">

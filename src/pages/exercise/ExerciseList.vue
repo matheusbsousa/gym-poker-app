@@ -1,16 +1,20 @@
 <script setup lang="ts">
 
-import {Exercise} from "../../models/Exercise";
-import {ref} from "vue";
 import {ExerciseDetail} from "../../models/ExerciseDetail";
 import Title from "../../components/Title.vue";
+import EditButton from "../../components/EditButton.vue";
+import {router} from "../../configuration/Router";
+
 
 interface Props {
   workoutId: number
   exercises?: ExerciseDetail[]
 }
-
 const props = defineProps<Props>();
+
+function goToEditExercise(exerciseId: number | undefined) {
+  router.push({name: 'EditExercise', params: {workoutId: props.workoutId, exerciseId: exerciseId}})
+}
 
 
 </script>
@@ -20,9 +24,12 @@ const props = defineProps<Props>();
   <Title title="Exercises" :underline="true"></Title>
 
   <v-card rounded="4" v-for="exercise of exercises" :key="exercise.id" class="mb-4">
-    <v-card-item class="text-center pa-2">
-      <v-card-title class="font-weight-bold"> {{ exercise.name }}</v-card-title>
-    </v-card-item>
+
+    <Title :title="exercise.name">
+      <template #button>
+        <EditButton @click="goToEditExercise(exercise.id)" class="mr-5"></EditButton>
+      </template>
+    </Title>
 
     <v-row class="pb-4">
       <v-col class="text-center pa-3">
@@ -47,7 +54,7 @@ const props = defineProps<Props>();
   </v-card>
 
   <div class="d-flex justify-center">
-    <router-link :to="`/workouts/${workoutId}/edit-exercises`">
+    <router-link :to="`/workouts/${workoutId}/exercises/edit-exercise-list`">
       <font-awesome-icon class="plus-icon" icon="plus"/>
     </router-link>
   </div>
