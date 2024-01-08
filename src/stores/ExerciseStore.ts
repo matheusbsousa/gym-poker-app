@@ -3,6 +3,7 @@ import apiClient from "../configuration/Axios";
 import {WorkoutExercises} from "../models/WorkoutExercises";
 import {ExerciseDetail} from "../models/ExerciseDetail";
 import {WorkoutDetails} from "../models/WorkoutDetails";
+import {BASE_URL} from "../constants/Constants";
 
 
 interface ExerciseState {
@@ -21,21 +22,21 @@ export const useExerciseStore = defineStore('exercises', {
     actions: {
 
         async getExercisesByWorkoutId(workoutId: number) {
-            return await apiClient.get<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`)
+            return await apiClient.get<WorkoutExercises>(`${BASE_URL}/workouts/${workoutId}/exercises`)
                 .then(response => {
                     this.workoutExercises = response.data;
                 })
         },
 
         async getExercisesById(workoutId: number, exerciseId: number) {
-            return await apiClient.get<ExerciseDetail>(`http://localhost:8080/workouts/${workoutId}/exercises/${exerciseId}`)
+            return await apiClient.get<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises/${exerciseId}`)
                 .then(response => {
                     this.exerciseDetail = response.data;
                 })
         },
 
         async linkExercisesToWorkout(workoutId: number, exerciseIds: number[], callback: Function, fail?: Function) {
-            return await apiClient.put<WorkoutDetails>(`http://localhost:8080/workouts/${workoutId}/exercises`,
+            return await apiClient.put<WorkoutDetails>(`${BASE_URL}/workouts/${workoutId}/exercises`,
                 exerciseIds)
                 .then(response => {
 
@@ -50,7 +51,7 @@ export const useExerciseStore = defineStore('exercises', {
         },
 
         async createExercise(workoutId: number, exercise: ExerciseDetail) {
-            return await apiClient.post<ExerciseDetail>(`http://localhost:8080/workouts/${workoutId}/exercises`,
+            return await apiClient.post<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises`,
                 exercise)
                 .then(response => {
                     this.exerciseDetail = response.data;
@@ -58,7 +59,7 @@ export const useExerciseStore = defineStore('exercises', {
         },
 
         async updateExercise(workoutId: number, exerciseId: number, exercise: ExerciseDetail) {
-            return await apiClient.put<ExerciseDetail>(`http://localhost:8080/workouts/${workoutId}/exercises/${exerciseId}`,
+            return await apiClient.put<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises/${exerciseId}`,
                 exercise)
                 .then(response => {
                     this.exerciseDetail = response.data;

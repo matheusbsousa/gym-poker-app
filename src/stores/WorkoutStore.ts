@@ -37,7 +37,7 @@ export const useWorkoutStore = defineStore('workouts', {
         },
 
         async getWorkoutById(id: number, callback: Function, fail?: Function) {
-            return await apiClient.get<WorkoutDetails>(`http://localhost:8080/workouts/${id}`)
+            return await apiClient.get<WorkoutDetails>(`${BASE_URL}/workouts/${id}`)
                 .then(response => {
 
                     callback(response)
