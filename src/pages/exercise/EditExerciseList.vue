@@ -10,19 +10,27 @@ import Title from "../../components/Title.vue";
 import {AxiosResponse} from "axios";
 import {WorkoutExercises} from "../../models/WorkoutExercises";
 import {useExerciseStore} from "../../stores/ExerciseStore";
+import {id} from "vuetify/locale";
+import {WorkoutDetails} from "../../models/WorkoutDetails";
 
 const router = useRouter();
 const workoutId = useRoute().params.workoutId;
 const exerciseStore = useExerciseStore();
 
-
+const dialog = ref(false);
 const workoutExercises = ref<WorkoutExercises>();
+const linkedExercisesIds = ref<number[]>([]);
+const newIds = ref<number[]>([]);
+
 exerciseStore.getExercisesByWorkoutId(Number(workoutId))
     .then(() => {
       workoutExercises.value = exerciseStore.workoutExercises;
       workoutExercises.value?.exercises.sort((a, b) => a.name.localeCompare(b.name));
-    });
 
+      if (workoutExercises.value) {
+        linkedExercisesIds.value = workoutExercises.value.exercises.filter(exercise => exercise.isSelected).map(exercise => exercise.id);
+      }
+    });
 
 function select(exercise: Exercise) {
   exercise.isSelected = !exercise.isSelected
@@ -32,25 +40,56 @@ function newExercice() {
   router.push({name: 'NewExercise', params: {id: workoutId}})
 }
 
-function afterLinkExercises(response: AxiosResponse<WorkoutExercises>) {
+function afterLinkExercises(response: AxiosResponse<WorkoutDetails>) {
 
-  router.push({name: 'WorkoutDetails', params: {id: workoutId}})
+  if (response.status === 200) {
+    newIds.value = response.data.exercises!!
+        .filter(exercise => !linkedExercisesIds.value.includes(exercise.customExerciseId!! || exercise.defaultExerciseId!!))
+        .map(exercise => exercise.id!!)
+
+  }
+  dialog.value = true
+  // router.push({name: 'WorkoutDetails', params: {id: workoutId}})
 }
 
 function linkSelectedExercisesToWorkout() {
 
-  if (workoutExercises.value === undefined) {
+  let workout = workoutExercises.value;
+
+  if (workout === undefined) {
     console.log("Workout object is null!")
     return;
   }
 
-  let workoutId = workoutExercises.value.workout.id
+  let workoutId = workout.workout.id
 
-  let exerciseIds: number[] = workoutExercises.value.exercises
-      .filter(exercise => exercise.isSelected)
-      .map(exercise => exercise.id);
+  let exerciseIds: number[] = getExerciseIds(workout.exercises);
   console.log(workoutId + '-' + exerciseIds)
   exerciseStore.linkExercisesToWorkout(workoutId!!, exerciseIds, afterLinkExercises)
+}
+
+function getExerciseIds(exercises: Exercise[]) {
+  return exercises
+      .filter(exercise => exercise.isSelected)
+      .map(exercise => exercise.id);
+}
+
+function editExerciseDetails() {
+
+  dialog.value = false;
+
+  router.push({
+    name: 'EditExercise',
+    params: {
+      workoutId: workoutId,
+      exerciseId: newIds.value[0]
+    },
+    query: {ids: newIds.value}
+  })
+}
+
+function backToWorkoutDetails() {
+  router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
 }
 
 </script>
@@ -96,5 +135,22 @@ function linkSelectedExercisesToWorkout() {
     <SubmitButton @click="linkSelectedExercisesToWorkout"></SubmitButton>
   </div>
 
-
+  <v-dialog
+      v-model="dialog"
+      width="50%">
+    <v-card rounded>
+      <v-card-title class="text-center text-h5">
+        Exercise Details
+      </v-card-title>
+      <v-card-text class="text-center">
+        Do you want to add the selected exercises information right now?
+      </v-card-text>
+      <v-divider class="ml-2 mr-2"></v-divider>
+      <v-card-actions class="justify-space-around">
+        <v-btn color="primary" width="40%" class="font-weight-bold" @click="backToWorkoutDetails">No</v-btn>
+        <v-divider :vertical="true"></v-divider>
+        <v-btn color="rgb(79 123 223)" width="40%" class="font-weight-bold" @click="editExerciseDetails">Yes</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>

@@ -80,7 +80,3 @@ function addWorkout(){
 
 
 </template>
-
-<style scoped>
-
-</style>

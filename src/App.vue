@@ -4,16 +4,16 @@ import WorkoutList from "./pages/workout/WorkoutList.vue";
 </script>
 
 <template>
-  <div class="container">
-    <v-layout class="justify-center">
+  <v-container>
+    <v-app class="justify-center">
       <Navbar/>
-      <v-main style="max-width: 1200px">
-        <v-container>
+      <v-main>
+        <v-container style="max-width: 1200px">
           <router-view/>
         </v-container>
       </v-main>
-    </v-layout>
-  </div>
+    </v-app>
+  </v-container>
 </template>
 
 <style>

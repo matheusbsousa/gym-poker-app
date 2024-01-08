@@ -8,5 +8,7 @@ export interface ExerciseDetail {
     weight?: number
     repetitionsMinimum?: number
     repetitionsMaximum?: number
+    defaultExerciseId?: number
+    customExerciseId?: number
     observations?: string
 }

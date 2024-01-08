@@ -51,7 +51,7 @@ function goToEditWorkout() {
 
     <div class="mt-2 mb-2 d-flex align-center">
       <p class="text-h6 mr-2">Type: </p>
-      <font-awesome-icon class="text-red text-h5" :icon="workoutDetails?.workout.type" />
+      <font-awesome-icon class="text-red text-h5" :icon="workoutDetails!!.workout.type" />
     </div>
 
     <div class="mt-2 mb-2 d-flex align-baseline">

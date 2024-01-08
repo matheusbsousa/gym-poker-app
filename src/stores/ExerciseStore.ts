@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import apiClient from "../configuration/Axios";
 import {WorkoutExercises} from "../models/WorkoutExercises";
 import {ExerciseDetail} from "../models/ExerciseDetail";
+import {WorkoutDetails} from "../models/WorkoutDetails";
 
 
 interface ExerciseState {
@@ -34,7 +35,7 @@ export const useExerciseStore = defineStore('exercises', {
         },
 
         async linkExercisesToWorkout(workoutId: number, exerciseIds: number[], callback: Function, fail?: Function) {
-            return await apiClient.put<WorkoutExercises>(`http://localhost:8080/workouts/${workoutId}/exercises`,
+            return await apiClient.put<WorkoutDetails>(`http://localhost:8080/workouts/${workoutId}/exercises`,
                 exerciseIds)
                 .then(response => {
 

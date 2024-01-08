@@ -3,7 +3,7 @@
 import Title from "../../components/Title.vue";
 import BackButton from "../../components/BackButton.vue";
 import SubmitButton from "../../components/SubmitButton.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {maxLength, maxValue, minLength, minValue, numeric, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import {router} from "../../configuration/Router";
@@ -13,13 +13,28 @@ import {ExerciseDetail} from "../../models/ExerciseDetail";
 
 const route = useRoute();
 const workoutId = Number(route.params.workoutId)
-const exerciseId = Number(route.params.exerciseId)
+const exerciseId = ref<number>()
 const exerciseStore = useExerciseStore();
-exerciseStore.getExercisesById(workoutId, exerciseId)
-    .then(() => {
-      formData.value = exerciseStore.exerciseDetail;
-    })
 
+const linkedExerciseIds = ref<number[]>([]);
+
+onMounted(() => {
+
+  if (route.query.ids) {
+    linkedExerciseIds.value = route.query.ids as unknown as number[];
+    exerciseId.value = linkedExerciseIds.value[0]
+  }else{
+    exerciseId.value = Number(route.params.exerciseId);
+  }
+  setFormDataExerciseValue();
+})
+
+function setFormDataExerciseValue() {
+  exerciseStore.getExercisesById(workoutId, exerciseId.value!!)
+      .then(() => {
+        formData.value = exerciseStore.exerciseDetail;
+      })
+}
 
 const formData = ref<any>({
   name: '',
@@ -77,7 +92,6 @@ async function submitForm() {
   if (isFormValid) {
 
     await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
-
       id: formData.value.id,
       name: formData.value.name,
       weight: formData.value.weight,
@@ -88,7 +102,20 @@ async function submitForm() {
       observations: formData.value.observations,
     })
         .then(response => {
-          router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+
+          if (linkedExerciseIds.value.length > 0) {
+            let index = linkedExerciseIds.value.indexOf(exerciseId.value!!)
+            linkedExerciseIds.value.splice(index, 1)
+            if (linkedExerciseIds.value.length > 0) {
+              console.log(linkedExerciseIds.value)
+              exerciseId.value = linkedExerciseIds.value[0];
+              setFormDataExerciseValue();
+            }else{
+              router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+            }
+          } else {
+            router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+          }
         })
         .catch(error => {
           console.log(error)
@@ -96,11 +123,12 @@ async function submitForm() {
   }
 }
 
+
 </script>
 
 <template>
 
-  <Title title="New Exercise"></Title>
+  <Title :title="formData.name"></Title>
 
   <v-sheet elevation="2" class="rounded pa-4">
 
