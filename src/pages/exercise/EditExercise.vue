@@ -6,44 +6,26 @@ import SubmitButton from "../../components/SubmitButton.vue";
 import {onMounted, ref} from "vue";
 import {maxLength, maxValue, minLength, minValue, numeric, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import {router} from "../../configuration/Router";
 import {useRoute} from "vue-router";
-import {useExerciseStore} from "../../stores/ExerciseStore";
 import {ExerciseDetail} from "../../models/ExerciseDetail";
+import {useExerciseStore} from "../../stores/ExerciseStore";
+import {router} from "../../configuration/Router";
 
 const route = useRoute();
 const workoutId = Number(route.params.workoutId)
 const exerciseId = ref<number>()
 const exerciseStore = useExerciseStore();
-
-const linkedExerciseIds = ref<number[]>([]);
-
-onMounted(() => {
-
-  if (route.query.ids) {
-    linkedExerciseIds.value = route.query.ids as unknown as number[];
-    exerciseId.value = linkedExerciseIds.value[0]
-  }else{
-    exerciseId.value = Number(route.params.exerciseId);
-  }
-  setFormDataExerciseValue();
-})
-
-function setFormDataExerciseValue() {
-  exerciseStore.getExercisesById(workoutId, exerciseId.value!!)
-      .then(() => {
-        formData.value = exerciseStore.exerciseDetail;
-      })
-}
+const exerciseDetail: ExerciseDetail = exerciseStore.exerciseDetail!;
+const exercisesToSetup = ref(exerciseStore.linkedExercises)
 
 const formData = ref<any>({
-  name: '',
-  seriesNumber: undefined,
-  restTimeInMinutes: undefined,
-  weight: undefined,
-  repetitionsMinimum: undefined,
-  repetitionsMaximum: undefined,
-  observations: ''
+  name: exerciseDetail.name,
+  sets: exerciseDetail.sets,
+  restTimeInMinutes: exerciseDetail.restTimeInMinutes,
+  weight: exerciseDetail.weight,
+  minimumReps: exerciseDetail.minimumReps,
+  maximumReps: exerciseDetail.maximumReps,
+  observations: exerciseDetail.observations
 });
 
 const rules = {
@@ -57,17 +39,17 @@ const rules = {
     minValue: minValue(1),
     maxValue: maxValue(999)
   },
-  repetitionsMinimum: {
+  minimumReps: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
   },
-  repetitionsMaximum: {
+  maximumReps: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
   },
-  seriesNumber: {
+  sets: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
@@ -90,36 +72,54 @@ async function submitForm() {
   const isFormValid = await v$.value.$validate();
 
   if (isFormValid) {
+  //
+  //   await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
+  //     id: formData.value.id,
+  //     name: formData.value.name,
+  //     weight: formData.value.weight,
+  //     repetitionsMinimum: formData.value.repetitionsMinimum,
+  //     repetitionsMaximum: formData.value.repetitionsMaximum,
+  //     seriesNumber: formData.value.seriesNumber,
+  //     restTimeInMinutes: formData.value.restTimeInMinutes,
+  //     observations: formData.value.observations,
+  //   })
+  //       .then(response => {
+  //
+  //         if (linkedExerciseIds.value.length > 0) {
+  //           let index = linkedExerciseIds.value.indexOf(exerciseId.value!!)
+  //           linkedExerciseIds.value.splice(index, 1)
+  //           if (linkedExerciseIds.value.length > 0) {
+  //             console.log(linkedExerciseIds.value)
+  //             exerciseId.value = linkedExerciseIds.value[0];
+  //             setFormDataExerciseValue();
+  //           }else{
+  //             router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+  //           }
+  //         } else {
+  //           router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+  //         }
+  //       })
+  //       .catch(error => {
+  //         console.log(error)
+  //       })
+  }
 
-    await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
-      id: formData.value.id,
-      name: formData.value.name,
-      weight: formData.value.weight,
-      repetitionsMinimum: formData.value.repetitionsMinimum,
-      repetitionsMaximum: formData.value.repetitionsMaximum,
-      seriesNumber: formData.value.seriesNumber,
-      restTimeInMinutes: formData.value.restTimeInMinutes,
-      observations: formData.value.observations,
-    })
-        .then(response => {
+  if(exercisesToSetup.value.length > 0){
+    let exercise = exercisesToSetup.value.splice(0, 1)
 
-          if (linkedExerciseIds.value.length > 0) {
-            let index = linkedExerciseIds.value.indexOf(exerciseId.value!!)
-            linkedExerciseIds.value.splice(index, 1)
-            if (linkedExerciseIds.value.length > 0) {
-              console.log(linkedExerciseIds.value)
-              exerciseId.value = linkedExerciseIds.value[0];
-              setFormDataExerciseValue();
-            }else{
-              router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
-            }
-          } else {
-            router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
-          }
-        })
-        .catch(error => {
-          console.log(error)
-        })
+    let exerciseDetail = exerciseStore.getExerciseByIdAndWorkoutId(exercise[0].id, workoutId)
+
+    formData.value = {
+      name: exerciseDetail.name,
+      sets: exerciseDetail.sets,
+      restTimeInMinutes: exerciseDetail.restTimeInMinutes,
+      weight: exerciseDetail.weight,
+      minimumReps: exerciseDetail.minimumReps,
+      maximumReps: exerciseDetail.maximumReps,
+      observations: exerciseDetail.observations
+    }
+  }else {
+    router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
   }
 }
 
@@ -128,117 +128,83 @@ async function submitForm() {
 
 <template>
 
-  <Title :title="formData.name"></Title>
 
-  <v-sheet elevation="2" class="rounded pa-4">
+  <v-container class="max-container">
 
-    <v-form @submit.prevent @submit="submitForm">
+    <v-sheet elevation="1" class="rounded pa-4">
 
-      <v-container>
-        <v-row>
-          <v-col>
-            <v-text-field v-model="formData.name"
-                          @input="v$.name.$touch"
-                          @blur="v$.name.$touch"
-                          :error-messages="v$.name.$errors.map(e => e.$message).join(' - ')"
-                          label="Exercise name"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+      <Title :title="exerciseDetail.name"></Title>
 
-        <v-row align="center">
-          <v-col cols="2">
-            <v-text-field v-model="formData.weight"
-                          @input="v$.weight.$touch"
-                          @blur="v$.weight.$touch"
-                          :error-messages="v$.weight.$errors.map(e => e.$message).join(' - ')"
-                          label="Weight"
-                          type="number"
-            ></v-text-field>
-          </v-col>
-          <v-col class="pl-0">
-            <v-label>Kg</v-label>
-          </v-col>
-        </v-row>
+      <v-form @submit.prevent @submit="submitForm">
 
-        <v-row align="center">
-          <v-col cols="2">
-            <v-text-field v-model="formData.seriesNumber"
-                          @input="v$.seriesNumber.$touch"
-                          @blur="v$.seriesNumber.$touch"
-                          :error-messages="v$.seriesNumber.$errors.map(e => e.$message).join(' - ')"
-                          label="Series"
-                          type="number"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+        <p class=" pa-1 mt-2 text-h7">Name: </p>
+        <v-text-field v-model="formData.name"
+                      @input="v$.name.$touch"
+                      @blur="v$.name.$touch"
+                      :error-messages="v$.name.$errors.map(e => e.$message).join(' - ')"
+        ></v-text-field>
 
+        <p class=" pa-1 mt-2 text-h7">Weight (Kg): </p>
+        <v-text-field v-model="formData.weight"
+                      @input="v$.weight.$touch"
+                      @blur="v$.weight.$touch"
+                      :error-messages="v$.weight.$errors.map(e => e.$message).join(' - ')"
+                      type="number"
+        ></v-text-field>
 
-        <v-label text="Repetitions"/>
+        <p class=" pa-1 mt-2 text-h7">Sets: </p>
+        <v-text-field v-model="formData.sets"
+                      @input="v$.sets.$touch"
+                      @blur="v$.sets.$touch"
+                      :error-messages="v$.sets.$errors.map(e => e.$message).join(' - ')"
+                      type="number"
+        ></v-text-field>
 
-        <v-row align="center">
-          <v-col cols="2">
-            <v-text-field v-model="formData.repetitionsMinimum"
-                          @input="v$.repetitionsMinimum.$touch"
-                          @blur="v$.repetitionsMinimum.$touch"
-                          :error-messages="v$.repetitionsMinimum.$errors.map(e => e.$message).join(' - ')"
-                          label="Minimum"
-                          type="number"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="1" align-self="center" class="text-center pl-0 pr-0">
-            <v-label>And</v-label>
-          </v-col>
-          <v-col cols="2">
-            <v-text-field v-model="formData.repetitionsMaximum"
-                          @input="v$.repetitionsMaximum.$touch"
-                          @blur="v$.repetitionsMaximum.$touch"
-                          :error-messages="v$.repetitionsMaximum.$errors.map(e => e.$message).join(' - ')"
-                          label="Maximum"
-                          type="number"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+        <p class=" pa-1 mt-2 text-h7">Reps (Minimum):</p>
 
-        <v-row align="center">
-          <v-col cols="2">
-            <v-text-field v-model="formData.restTimeInMinutes"
-                          @input="v$.restTimeInMinutes.$touch"
-                          @blur="v$.restTimeInMinutes.$touch"
-                          :error-messages="v$.restTimeInMinutes.$errors.map(e => e.$message).join(' - ')"
-                          label="Rest time"
-                          type="number"
-            ></v-text-field>
-          </v-col>
-          <v-col class="pl-0">
-            <v-label>Minutes</v-label>
-          </v-col>
-        </v-row>
+        <div class="d-flex ga-3">
 
-        <v-row>
-          <v-col>
-            <v-textarea v-model="formData.observations"
-                        @input="v$.observations.$touch"
-                        @blur="v$.observations.$touch"
-                        :error-messages="v$.observations.$errors.map(e => e.$message).join(' - ')"
-                        label="Observations"
-            ></v-textarea>
-          </v-col>
+          <v-text-field v-model="formData.minimumReps"
+                        @input="v$.minimumReps.$touch"
+                        @blur="v$.minimumReps.$touch"
+                        :error-messages="v$.minimumReps.$errors.map(e => e.$message).join(' - ')"
+                        label="Minimum"
+                        type="number"
+          ></v-text-field>
 
-        </v-row>
+          <v-text-field v-model="formData.maximumReps"
+                        @input="v$.maximumReps.$touch"
+                        @blur="v$.maximumReps.$touch"
+                        :error-messages="v$.maximumReps.$errors.map(e => e.$message).join(' - ')"
+                        label="Maximum"
+                        type="number"
+          ></v-text-field>
 
+        </div>
 
-      </v-container>
-      <div class="d-flex justify-space-between pl-5 pr-5">
-        <BackButton></BackButton>
-        <SubmitButton @click="submitForm"></SubmitButton>
-      </div>
+        <p class=" pa-1 mt-2 text-h7">Rest time (minutes):</p>
+        <v-text-field v-model="formData.restTimeInMinutes"
+                      @input="v$.restTimeInMinutes.$touch"
+                      @blur="v$.restTimeInMinutes.$touch"
+                      :error-messages="v$.restTimeInMinutes.$errors.map(e => e.$message).join(' - ')"
+                      type="number"
+        ></v-text-field>
 
-    </v-form>
+        <p class=" pa-1 mt-2 text-h7">Observation:</p>
+        <v-textarea v-model="formData.observations"
+                    @input="v$.observations.$touch"
+                    @blur="v$.observations.$touch"
+                    :error-messages="v$.observations.$errors.map(e => e.$message).join(' - ')"
+        ></v-textarea>
 
+        <div class="d-flex justify-space-between pl-5 pr-5">
+          <BackButton></BackButton>
+          <SubmitButton @click="submitForm"></SubmitButton>
+        </div>
 
-  </v-sheet>
-
+      </v-form>
+    </v-sheet>
+  </v-container>
 </template>
 
 <style scoped>

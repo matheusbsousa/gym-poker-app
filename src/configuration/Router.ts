@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Home from "../pages/home/Home.vue";
-import NewWorkout from "../pages/workout/NewWorkout.vue";
+import NewWorkout from "../pages/workout/new-workout/NewWorkout.vue";
 import WorkoutDetails from "../pages/workout/WorkoutDetails.vue";
 import EditWorkout from "../pages/workout/EditWorkout.vue";
 import EditExerciseList from "../pages/exercise/EditExerciseList.vue";
@@ -43,7 +43,8 @@ export const router = createRouter({
         {
             path: '/workouts/:workoutId/exercises/:exerciseId/edit',
             component: EditExercise,
-            name: 'EditExercise'
+            name: 'EditExercise',
+            props: true
         }
 
     ]

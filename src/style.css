@@ -1,3 +1,7 @@
 .pointer{
     cursor: pointer;
 }
+
+.max-container{
+    max-width: 1000px;
+}

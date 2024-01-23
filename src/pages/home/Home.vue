@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import WorkoutsList from "../workout/WorkoutList.vue";
+import WorkoutsList from "../workout/workout-list/WorkoutList.vue";
 </script>
 
 <template>

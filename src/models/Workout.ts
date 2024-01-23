@@ -1,4 +1,3 @@
-import {Exercise} from "./Exercise";
 import {ExerciseDetail} from "./ExerciseDetail";
 
 export interface Workout {

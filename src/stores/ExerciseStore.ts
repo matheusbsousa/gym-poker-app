@@ -1,75 +1,44 @@
-import {defineStore} from 'pinia'
-import apiClient from "../configuration/Axios";
-import {WorkoutExercises} from "../models/WorkoutExercises";
+import {createPinia, defineStore} from "pinia";
+import {Exercise} from "../models/Exercise";
 import {ExerciseDetail} from "../models/ExerciseDetail";
-import {WorkoutDetails} from "../models/WorkoutDetails";
-import {BASE_URL} from "../constants/Constants";
+import {exerciseDetail, exercises} from "../constants/DATA";
 
+const pinia = createPinia();
 
-interface ExerciseState {
-    exerciseDetail: ExerciseDetail
-    workoutExercises?: WorkoutExercises
+interface ExerciseStoreState {
+    exerciseDetail?: ExerciseDetail
+    linkedExercises: Exercise[]
 }
 
-export const useExerciseStore = defineStore('exercises', {
-    state: (): ExerciseState => (
-        {
-            exerciseDetail:{
-                name: ''
-            }
-        }
-    ),
-    actions: {
+export const useExerciseStore = defineStore({
 
-        async getExercisesByWorkoutId(workoutId: number) {
-            return await apiClient.get<WorkoutExercises>(`${BASE_URL}/workouts/${workoutId}/exercises`)
-                .then(response => {
-                    this.workoutExercises = response.data;
-                })
-        },
+    id: 'exerciseStore',
 
-        async getExercisesById(workoutId: number, exerciseId: number) {
-            return await apiClient.get<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises/${exerciseId}`)
-                .then(response => {
-                    this.exerciseDetail = response.data;
-                })
-        },
+    state: (): ExerciseStoreState => ({
+        exerciseDetail: undefined,
+        linkedExercises: []
+    }),
 
-        async linkExercisesToWorkout(workoutId: number, exerciseIds: number[], callback: Function, fail?: Function) {
-            return await apiClient.put<WorkoutDetails>(`${BASE_URL}/workouts/${workoutId}/exercises`,
-                exerciseIds)
-                .then(response => {
-
-                    callback(response);
-
-                })
-                .catch(error => {
-                    if (fail) {
-                        fail(error)
-                    }
-                })
-        },
-
-        async createExercise(workoutId: number, exercise: ExerciseDetail) {
-            return await apiClient.post<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises`,
-                exercise)
-                .then(response => {
-                    this.exerciseDetail = response.data;
-                });
-        },
-
-        async updateExercise(workoutId: number, exerciseId: number, exercise: ExerciseDetail) {
-            return await apiClient.put<ExerciseDetail>(`${BASE_URL}/workouts/${workoutId}/exercises/${exerciseId}`,
-                exercise)
-                .then(response => {
-                    this.exerciseDetail = response.data;
-                });
-        },
+    getters: {
 
     },
-    getters: {
-        getExerciseId(): number {
-            return this.exerciseDetail?.id!!;
+
+    actions: {
+        setExercise(exercise: ExerciseDetail) {
+            this.exerciseDetail = exercise;
+        },
+
+        getExerciseByIdAndWorkoutId(exerciseId: number, workoutId: number): ExerciseDetail{
+            return exerciseDetail;
+        },
+
+        getExercises(workoutId: number): Exercise[] {
+            console.log(exercises);
+            return exercises;
+        },
+
+        setLinkedExercises(exercises: Exercise[]) {
+            this.linkedExercises = exercises;
         }
     }
 })

@@ -1,23 +1,13 @@
 <script setup lang="ts">
-
-import {useRouter} from "vue-router";
-
-const router = useRouter()
-
 </script>
-
 <template>
-    <v-sheet elevation="1" width="40" height="40"
-             class=" back bg-primary d-flex justify-center align-center rounded-circle">
-      <font-awesome-icon class="text-h4 text-white"
-                         icon="plus"/>
+
+    <v-sheet elevation="1" width="25" height="25"
+             class="bg-primary d-flex justify-center align-center rounded-circle pointer">
+      <font-awesome-icon class="text-h6 text-white" icon="plus"/>
     </v-sheet>
 </template>
 
 <style scoped>
-
-.back{
-  cursor: pointer
-}
 
 </style>

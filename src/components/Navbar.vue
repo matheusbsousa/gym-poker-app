@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
-
+import {useDisplay} from "vuetify";
 import {ref} from "vue";
 
-const selectedTab = ref("Home")
+const screen = ref(useDisplay())
 
 const navbarButtons = [
   {
-    icon: "mdi-home",
+    icon: "",
     path: "/",
     title: "Home"
   }
@@ -16,29 +16,28 @@ const navbarButtons = [
 </script>
 
 <template>
-  <v-app-bar height="70">
-    <v-container>
-      <v-row align="center">
-        <v-col cols="5" lg="2" md="4">
-          <router-link to="/" class="text-decoration-none text-center">
-            <v-sheet elevation="4" class="rounded-pill d-flex align-center w-50" color="primary" height="50px">
-              <v-app-bar-title class="text-white">Gym Poker</v-app-bar-title>
-            </v-sheet>
+  <v-container fluid>
+    <v-row align="center" justify="center">
+      <v-col cols="5">
+        <router-link to="/" class="text-decoration-none text-center">
+          <v-sheet elevation="4" max-width="150"
+                   class="rounded-pill d-flex align-center w-50 max-width-sm" color="primary" height="50px">
+            <v-app-bar-title v-if="screen.smAndUp" class="text-white">Gym Poker</v-app-bar-title>
+            <v-app-bar-title v-else class="text-white">GP</v-app-bar-title>
+          </v-sheet>
+        </router-link>
+      </v-col>
+      <v-spacer/>
+      <v-col cols="2" class="bg:">
+        <v-hover v-slot="{isHovering, props}" open-delay="200">
+          <router-link class="text-decoration-none" v-for="button of navbarButtons" :key="button.title"
+                       :to="button.path" >
+            <v-sheet :color="isHovering ? 'primary' : 'white'" >Home</v-sheet>
           </router-link>
-        </v-col>
-        <v-spacer />
-        <v-col cols="2" lg="1">
-          <router-link v-for="button of navbarButtons" :key="button.title" :to="button.path">
-            <v-btn height="70" :ripple="false" class="menu-btn">{{ button.title }}</v-btn>
-          </router-link>
-        </v-col>
-        <v-col cols="2" lg="1">
-          <v-btn variant="flat" height="70" prepend-icon="mdi-cog">Config</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-app-bar>
-
+        </v-hover>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style>

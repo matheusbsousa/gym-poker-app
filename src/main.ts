@@ -6,17 +6,20 @@ import {router} from './configuration/Router'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {
+    faA,
+    faArrowLeft,
+    faB,
+    faC,
+    faCheck,
     faCircleInfo,
     faPenToSquare,
     faPlus,
-    faArrowLeft,
-    faCheck,
-    faA,
-    faC,
-    faB, faTrash
+    faTrash
 } from "@fortawesome/free-solid-svg-icons";
+
 // Pinia
 import {createPinia} from 'pinia';
+
 // Vuetify
 import 'vuetify/styles'
 import {createVuetify} from 'vuetify'
@@ -39,13 +42,21 @@ const pinia = createPinia();
 const vuetify = createVuetify({
     theme: {
         themes: {
-           light: {
-               dark: false,
-               colors: {
-                   primary: '#A42828',
-                   secondary: '#D9D9D9'
-               }
-           }
+            light: {
+                dark: false,
+                colors: {
+                    primary: '#A42828',
+                    secondary: '#D9D9D9'
+                }
+            }
+        }
+    },
+    display: {
+        thresholds: {
+            xs: 0,
+            sm: 600,
+            md: 850,
+            lg: 1264,
         }
     },
     components,
