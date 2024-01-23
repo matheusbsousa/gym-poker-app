@@ -9,5 +9,17 @@ jobs:
     name: Build application
     runs-on: ubuntu-latest
     steps:
-      - name: Test step
-        run: echo "Hello world"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.yarnpkg.com'
+
+      - name: Install dependencies and Build
+        run: |
+          yarn --frozen-lockfile
+          yarn build
