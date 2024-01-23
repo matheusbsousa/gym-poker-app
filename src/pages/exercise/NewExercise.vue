@@ -14,9 +14,9 @@ const workoutId = Number(route.params.workoutId)
 interface ExerciseInitialState {
   name: string
   weight: number | undefined
-  repetitionsMinimum: number | undefined
-  repetitionsMaximum: number | undefined
-  seriesNumber: number | undefined
+  minimumReps: number | undefined
+  maximumReps: number | undefined
+  sets: number | undefined
   restTimeInMinutes: number | undefined
   observations: string
 }
@@ -24,7 +24,7 @@ interface ExerciseInitialState {
 const initialState: ExerciseInitialState = {
   name: '',
   weight: undefined,
-  repsMinimum: undefined,
+  minimumReps: undefined,
   maximumReps: undefined,
   sets: undefined,
   restTimeInMinutes: undefined,
@@ -44,17 +44,17 @@ const rules = {
     minValue: minValue(1),
     maxValue: maxValue(999)
   },
-  repetitionsMinimum: {
+  minimumReps: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
   },
-  repetitionsMaximum: {
+  maximumReps: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
   },
-  seriesNumber: {
+  sets: {
     numeric: numeric,
     minValue: minValue(1),
     maxValue: maxValue(99)
@@ -82,9 +82,9 @@ async function submitForm() {
   //
   //     name: formData.name,
   //     weight: formData.weight,
-  //     repetitionsMinimum: formData.repetitionsMinimum,
-  //     repetitionsMaximum: formData.repetitionsMaximum,
-  //     seriesNumber: formData.seriesNumber,
+  //     minimumReps: formData.minimumReps,
+  //     maximumReps: formData.maximumReps,
+  //     sets: formData.sets,
   //     restTimeInMinutes: formData.restTimeInMinutes,
   //     observations: formData.observations,
   //   })
@@ -124,10 +124,10 @@ async function submitForm() {
         ></v-text-field>
 
         <p class=" pa-1 mt-2 text-h7">Sets: </p>
-        <v-text-field v-model="formData.seriesNumber"
-                      @input="v$.seriesNumber.$touch"
-                      @blur="v$.seriesNumber.$touch"
-                      :error-messages="v$.seriesNumber.$errors.map(e => e.$message).join(' - ')"
+        <v-text-field v-model="formData.sets"
+                      @input="v$.sets.$touch"
+                      @blur="v$.sets.$touch"
+                      :error-messages="v$.sets.$errors.map(e => e.$message).join(' - ')"
                       type="number"
         ></v-text-field>
 
@@ -135,18 +135,18 @@ async function submitForm() {
 
         <div class="d-flex ga-3">
 
-          <v-text-field v-model="formData.repetitionsMinimum"
-                        @input="v$.repetitionsMinimum.$touch"
-                        @blur="v$.repetitionsMinimum.$touch"
-                        :error-messages="v$.repetitionsMinimum.$errors.map(e => e.$message).join(' - ')"
+          <v-text-field v-model="formData.minimumReps"
+                        @input="v$.minimumReps.$touch"
+                        @blur="v$.minimumReps.$touch"
+                        :error-messages="v$.minimumReps.$errors.map(e => e.$message).join(' - ')"
                         label="Minimum"
                         type="number"
           ></v-text-field>
 
-          <v-text-field v-model="formData.repetitionsMaximum"
-                        @input="v$.repetitionsMaximum.$touch"
-                        @blur="v$.repetitionsMaximum.$touch"
-                        :error-messages="v$.repetitionsMaximum.$errors.map(e => e.$message).join(' - ')"
+          <v-text-field v-model="formData.maximumReps"
+                        @input="v$.maximumReps.$touch"
+                        @blur="v$.maximumReps.$touch"
+                        :error-messages="v$.maximumReps.$errors.map(e => e.$message).join(' - ')"
                         label="Maximum"
                         type="number"
           ></v-text-field>

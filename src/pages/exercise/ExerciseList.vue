@@ -11,7 +11,7 @@ const store = useExerciseStore();
 
 interface Props {
   workoutId: number
-  exercises: ExerciseDetail[]
+  exercises?: ExerciseDetail[]
 }
 
 const props = defineProps<Props>();
