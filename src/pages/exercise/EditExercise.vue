@@ -10,6 +10,7 @@ import {useRoute} from "vue-router";
 import {ExerciseDetail} from "../../models/ExerciseDetail";
 import {useExerciseStore} from "../../stores/ExerciseStore";
 import {router} from "../../configuration/Router";
+import {exercises, workouts} from "../../constants/DATA";
 
 const route = useRoute();
 const workoutId = Number(route.params.workoutId)
@@ -72,43 +73,80 @@ async function submitForm() {
   const isFormValid = await v$.value.$validate();
 
   if (isFormValid) {
-  //
-  //   await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
-  //     id: formData.value.id,
-  //     name: formData.value.name,
-  //     weight: formData.value.weight,
-  //     repetitionsMinimum: formData.value.repetitionsMinimum,
-  //     repetitionsMaximum: formData.value.repetitionsMaximum,
-  //     seriesNumber: formData.value.seriesNumber,
-  //     restTimeInMinutes: formData.value.restTimeInMinutes,
-  //     observations: formData.value.observations,
-  //   })
-  //       .then(response => {
-  //
-  //         if (linkedExerciseIds.value.length > 0) {
-  //           let index = linkedExerciseIds.value.indexOf(exerciseId.value!!)
-  //           linkedExerciseIds.value.splice(index, 1)
-  //           if (linkedExerciseIds.value.length > 0) {
-  //             console.log(linkedExerciseIds.value)
-  //             exerciseId.value = linkedExerciseIds.value[0];
-  //             setFormDataExerciseValue();
-  //           }else{
-  //             router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
-  //           }
-  //         } else {
-  //           router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log(error)
-  //       })
+
+    let workout = workouts.find(workout => workout.id === workoutId)!!
+    let exercises = workout.exercises!!
+
+    let currentExecercise = exercises.find(exercise => exercise.id === exerciseId.value)!!
+
+    if (currentExecercise === undefined) {
+      currentExecercise = {
+        id: exerciseId.value!!,
+        name: formData.value.name,
+        sets: formData.value.sets,
+        restTimeInMinutes: formData.value.restTimeInMinutes,
+        weight: formData.value.weight,
+        minimumReps: formData.value.minimumReps,
+        maximumReps: formData.value.maximumReps,
+        observations: formData.value.observations
+      }
+      exercises.push(currentExecercise)
+    } else {
+      exercises.splice(exercises.indexOf(currentExecercise), 1)
+      currentExecercise = {
+        id: exerciseId.value!!,
+        name: formData.value.name,
+        sets: formData.value.sets,
+        restTimeInMinutes: formData.value.restTimeInMinutes,
+        weight: formData.value.weight,
+        minimumReps: formData.value.minimumReps,
+        maximumReps: formData.value.maximumReps,
+        observations: formData.value.observations
+      }
+    }
+    exercises.push(currentExecercise)
+
+
+    //
+    //   await exerciseStore.updateExercise(workoutId, exerciseStore.getExerciseId, {
+    //     id: formData.value.id,
+    //     name: formData.value.name,
+    //     weight: formData.value.weight,
+    //     repetitionsMinimum: formData.value.repetitionsMinimum,
+    //     repetitionsMaximum: formData.value.repetitionsMaximum,
+    //     seriesNumber: formData.value.seriesNumber,
+    //     restTimeInMinutes: formData.value.restTimeInMinutes,
+    //     observations: formData.value.observations,
+    //   })
+    //       .then(response => {
+    //
+    //         if (linkedExerciseIds.value.length > 0) {
+    //           let index = linkedExerciseIds.value.indexOf(exerciseId.value!!)
+    //           linkedExerciseIds.value.splice(index, 1)
+    //           if (linkedExerciseIds.value.length > 0) {
+    //             console.log(linkedExerciseIds.value)
+    //             exerciseId.value = linkedExerciseIds.value[0];
+    //             setFormDataExerciseValue();
+    //           }else{
+    //             router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+    //           }
+    //         } else {
+    //           router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
+    //         }
+    //       })
+    //       .catch(error => {
+    //         console.log(error)
+    //       })
   }
 
-  if(exercisesToSetup.value.length > 0){
-    let exercise = exercisesToSetup.value.splice(0, 1)
+  if (exercisesToSetup.value.length > 0) {
 
-    let exerciseDetail = exerciseStore.getExerciseByIdAndWorkoutId(exercise[0].id, workoutId)
+    let exercise = exercisesToSetup.value[0]
+    exercisesToSetup.value.splice(0, 1)
 
+    let exerciseDetail = exerciseStore.getExerciseByIdAndWorkoutId(exercise.id, workoutId)
+
+    exerciseId.value = exerciseDetail.id
     formData.value = {
       name: exerciseDetail.name,
       sets: exerciseDetail.sets,
@@ -118,7 +156,7 @@ async function submitForm() {
       maximumReps: exerciseDetail.maximumReps,
       observations: exerciseDetail.observations
     }
-  }else {
+  } else {
     router.push({name: 'WorkoutDetails', params: {workoutId: workoutId}})
   }
 }
@@ -133,7 +171,7 @@ async function submitForm() {
 
     <v-sheet elevation="1" class="rounded pa-4">
 
-      <Title :title="exerciseDetail.name"></Title>
+      <Title :title="formData.name"></Title>
 
       <v-form @submit.prevent @submit="submitForm">
 

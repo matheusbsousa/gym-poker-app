@@ -8,7 +8,7 @@ import NewExercise from "../pages/exercise/NewExercise.vue";
 import EditExercise from "../pages/exercise/EditExercise.vue";
 
 export const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
@@ -44,7 +44,6 @@ export const router = createRouter({
             path: '/workouts/:workoutId/exercises/:exerciseId/edit',
             component: EditExercise,
             name: 'EditExercise',
-            props: true
         }
 
     ]

@@ -43,11 +43,13 @@ function linkSelectedExercisesToWorkout() {
 
 function editExerciseDetails() {
 
-  let firstExercise = exercises.value[0];
-  exercises.value.splice(0, 1)
+  let linkedExercises = exercises.value.filter(exercise => exercise.isSelected);
+
+  let firstExercise = linkedExercises[0];
+  linkedExercises.splice(0, 1)
 
   exerciseStore.setExercise(firstExercise)
-  exerciseStore.setLinkedExercises(exercises.value)
+  exerciseStore.setLinkedExercises(linkedExercises)
 
   dialog.value = false;
 

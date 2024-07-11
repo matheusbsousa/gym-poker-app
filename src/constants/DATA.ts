@@ -12,7 +12,7 @@ export const workouts: Workout[] = [
         exercises: [
             {
                 id: 1,
-                name: 'Test Exercise',
+                name: 'Test Exercise 1',
                 sets: 3,
                 minimumReps: 8,
                 maximumReps: 10,
@@ -24,25 +24,25 @@ export const workouts: Workout[] = [
             },
             {
                 id: 2,
-                name: 'Test Exercise',
+                name: 'Test Exercise 2',
                 sets: 3,
                 minimumReps: 8,
                 maximumReps: 10,
                 weight: 100,
                 restTimeInMinutes: 1,
-                defaultExerciseId: 1,
+                defaultExerciseId: 2,
                 customExerciseId: undefined,
                 observations: undefined,
             },
             {
                 id: 3,
-                name: 'Test Exercise',
+                name: 'Test Exercise 3',
                 sets: 3,
                 minimumReps: 8,
                 maximumReps: 10,
                 weight: 100,
                 restTimeInMinutes: 1,
-                defaultExerciseId: 1,
+                defaultExerciseId: 3,
                 customExerciseId: undefined,
                 observations: undefined,
             }
@@ -77,7 +77,7 @@ export const exercises: Exercise[] = [
     {
         id: 3,
         name: 'Test Exercise 3',
-        isSelected: false,
+        isSelected: true,
         default: true
     },
     {
@@ -89,20 +89,20 @@ export const exercises: Exercise[] = [
     {
         id: 5,
         name: 'Test Exercise 5',
-        isSelected: true,
+        isSelected: false,
         default: false
     },
     {
         id: 6,
         name: 'Test Exercise 6',
         isSelected: false,
-        default: true
+        default: false
     },
     {
         id: 7,
         name: 'Test Exercise 7',
         isSelected: false,
-        default: true
+        default: false
     }
 ]
 
